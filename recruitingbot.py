@@ -10,6 +10,8 @@ import schedule
 from photon import LobiAPI
 
 class RecruitingBot(LobiAPI):
+#        def __init__(self):
+#                self.Login("taiseimaruyama7171@gmail.com", "maru0807171")
         def GetNewMessage(self,group_id):
                 top_thread = self.GetThreads(group_id,1)
                 if top_thread[0].get('replies')==None:
@@ -98,6 +100,10 @@ class RecruitingBot(LobiAPI):
                         return replies["chats"][0]["message"]
                 else:
                         return None
+        def PostClanNumberError(self,group_id,chat_id):
+                message = "[BOTより返信]\n番号の入力が不適切です\n半角で1～6のいづれかを再度返信してください"
+                response = self.PostReply(group_id,chat_id,message)
+                return response
         def PostStartExam(self,group_id,chat_id,admin_room_id,battles,winrate,last_battle_time,nickname,clan):
                 message = "[BOTより返信]\n担当者が審査を開始します\n（この作業には最大数日かかる可能性があります）\n審査ののち担当者がロビーで個チャをいたします\nしばらくお待ちください"
                 response = self.PostReply(group_id,chat_id,message)

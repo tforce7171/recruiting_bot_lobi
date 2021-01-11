@@ -76,7 +76,7 @@ class LobiAPI:
 	def Login(self, mail, password):
 		spell = self.GetSpell(mail, password)
 		if spell == None or spell == "":
-			return false
+			return False
 		self.DeviceUUID = uuid.uuid4()
 		self.Token = self.GetToken(self.DeviceUUID, spell)
 		return self.Token != None and len(self.Token) > 0
