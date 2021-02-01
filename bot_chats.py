@@ -10,77 +10,111 @@ import schedule
 import subprocess
 from recruitingbot import RecruitingBot
 
-reload(sys)
-sys.setdefaultencoding("utf-8")
-group_id = "587e17a3ab0b640e62fb444b3c48b83832b622e7"
-admin_room_id = "0fa5904919f14152cbb50d427922b470e68af0ee"
-application_id = "eda85c3d6ddbb56920d3544319a4a788"
-wg_access_token = "9a72b04b7f60bffc904503e93c241110dd080e4f"
-clans = {"1":"WWN","2":"WWN-2","3":"WWN-3","4":"WWN-4","5":"WWN-A","6":"WWN-E"}
-
-api = RecruitingBot()
-api.Login("taiseimaruyama7171@gmail.com", "maru0807171")
-thread = api.GetNewMessage(group_id)
-
-        
-user_id = thread[0]["user"]["uid"]
-chat_id = thread[0]["id"]
-api.PostFirstReply(group_id,chat_id)
-while True:
-        i = api.GetFirstReplyGooBoo(group_id,chat_id)
-        if i == 3:
-                api.PostGooBooError(group_id,chat_id)
-        elif i == 1 or i== 2:
-                break
-        time.sleep(3)
-if i == 2:
-        api.PostCallAdmin(group_id,chat_id,admin_room_id)
-elif i == 1:
-        api.PostAskIGN(group_id,chat_id)
-        reply_number = 3
+def LookieInterview(group_id):
+        gooboo = WaitGooBoo(GetUserChatID(group_id))
+        if gooboo == 2:
+                api.PostCallAdmin(group_id,chat_id,admin_room_id)
+        elif gooboo == 1:
+                api.PostAskIGN(group_id,chat_id)
+                
+def WaitIGN()
+def GetUserChatID(group_id):
+        result = {}
+        thread = api.GetNewMessage(group_id)
+        user_id = thread[0]["user"]["uid"]
+        chat_id = thread[0]["id"]
+        result["user_id"] = user_id
+        result["chat_id"] = chat_id
+        return result
+def WaitGooBoo(id_data):
+        chat_id = id_data["chat_id"]
         while True:
-                while True:
-                        result = api.GetIGN(group_id,chat_id,reply_number)
-                        time.sleep(3)
-                        if result != None:
-                                ign = result
-                                data = api.GetIGNData(application_id,ign,wg_access_token)
-                                break
-                data = api.GetIGNData(application_id,ign,wg_access_token)
-                if data == None:
-                        api.PostIGNError(group_id,chat_id)
-                        reply_number += 2
-                else:
-                        battles = data["statistics"]["all"]["battles"]
-                        wins = data["statistics"]["all"]["wins"]
-                        decimal.getcontext().prec = 4 
-                        winrate = decimal.Decimal(wins)/decimal.Decimal(battles)*100
-                        last_battle_time = datetime.datetime.fromtimestamp(data["last_battle_time"])
-                        nickname = data["nickname"]
-                        api.PostAskOK(group_id,chat_id,battles,nickname)
-                        while True:
-                                i = api.GetAskOKGooBoo(group_id,chat_id)
-                                if i == 1 or i == 2:
-                                        break
-                                elif i == 3:
-                                        api.PostGooBooError(self,group_id,chat_id)
-                                time.sleep(3)
-                        if i == 1:
-                                break
-                        elif i == 2:
-                                api.PostAskIGN(group_id,chat_id)
-                                reply_number += 3
-        api.PostWhichClan(group_id,chat_id)
-        reply_number += 3
-        while True:
-                result = api.GetWhichClan(group_id,chat_id,reply_number)
-                if result != None:
-                        if result == "1" or result == "2" or result == "3" or result == "4" or result == "5" or result == "6":
-                                clan_number = result
-                                break
-                        else:
-                                api.PostClanNumberError(group_id,chat_id)
-                                reply_number += 2
+                i = api.GetFirstReplyGooBoo(group_id,chat_id)
+                if i == 3:
+                        api.PostGooBooError(group_id,chat_id)
+                elif i == 1 or i== 2:
+                        return i
                 time.sleep(3)
-        clan = clans[clan_number]
-        api.PostStartExam(group_id,chat_id,admin_room_id,battles,winrate,last_battle_time,nickname,clan)
+
+if __name__ == "__main__":
+        reload(sys)
+        sys.setdefaultencoding("utf-8")
+        group_id = "587e17a3ab0b640e62fb444b3c48b83832b622e7"
+        admin_room_id = "0fa5904919f14152cbb50d427922b470e68af0ee"
+        application_id = "eda85c3d6ddbb56920d3544319a4a788"
+        wg_access_token = "9a72b04b7f60bffc904503e93c241110dd080e4f"
+        clans = {"1":"WWN","2":"WWN-2","3":"WWN-3","4":"WWN-4","5":"WWN-A","6":"WWN-E"}
+        api = RecruitingBot()
+        api.Login("taiseimaruyama7171@gmail.com", "maru0807171")
+
+
+
+# thread = api.GetNewMessage(group_id)
+# user_id = thread[0]["user"]["uid"]
+# chat_id = thread[0]["id"]
+# api.PostFirstReply(group_id,chat_id)
+# while True:
+#         i = api.GetFirstReplyGooBoo(group_id,chat_id)
+#         if i == 3:
+#                 api.PostGooBooError(group_id,chat_id)
+#         elif i == 1 or i== 2:
+#                 break
+#         time.sleep(3)
+# if i == 2:
+#         api.PostCallAdmin(group_id,chat_id,admin_room_id)
+# elif i == 1:
+#         api.PostAskIGN(group_id,chat_id)
+#         reply_number = 3
+#         while True:
+#                 while True:
+#                         result = api.GetIGN(group_id,chat_id,reply_number)
+#                         time.sleep(3)
+#                         if result != None:
+#                                 ign = result
+#                                 data = api.GetIGNData(application_id,ign,wg_access_token)
+#                                 break
+#                 data = api.GetIGNData(application_id,ign,wg_access_token)
+#                 if data == None:
+#                         api.PostIGNError(group_id,chat_id)
+#                         reply_number += 2
+#                 else:
+#                         battles = data["statistics"]["all"]["battles"]
+#                         wins = data["statistics"]["all"]["wins"]
+#                         decimal.getcontext().prec = 4
+#                         winrate = decimal.Decimal(wins)/decimal.Decimal(battles)*100
+#                         last_battle_time = datetime.datetime.fromtimestamp(data["last_battle_time"])
+#                         nickname = data["nickname"]
+#                         api.PostAskOK(group_id,chat_id,battles,nickname)
+#                         while True:
+#                                 i = api.GetAskOKGooBoo(group_id,chat_id)
+#                                 if i == 1 or i == 2:
+#                                         break
+#                                 elif i == 3:
+#                                         api.PostGooBooError(self,group_id,chat_id)
+#                                 time.sleep(3)
+#                         if i == 1:
+#                                 break
+#                         elif i == 2:
+#                                 api.PostAskIGN(group_id,chat_id)
+#                                 reply_number += 3
+#         api.PostWhichClan(group_id,chat_id)
+#         reply_number += 3
+#         while True:
+#                 result = api.GetWhichClan(group_id,chat_id,reply_number)
+#                 if result != None:
+#                         if result == "1" or result == "2" or result == "3" or result == "4" or result == "5" or result == "6":
+#                                 clan_number = result
+#                                 break
+#                         else:
+#                                 api.PostClanNumberError(group_id,chat_id)
+#                                 reply_number += 2
+#                 time.sleep(3)
+#         clan = clans[clan_number]
+#         api.PostStartExam(group_id,chat_id,admin_room_id,battles,winrate,last_battle_time,nickname,clan)
+#         while True:
+#                 i = api.GetExamGooBoo(group_id,chat_id)
+#                 if i == 3:
+#                         api.PostGooBooError(group_id,chat_id)
+#                 elif i == 1 or i== 2:
+#                         break
+#                 time.sleep(3)
