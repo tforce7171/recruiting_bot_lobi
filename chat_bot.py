@@ -11,30 +11,67 @@ import subprocess
 from recruitingbot import RecruitingBot
 
 def LookieInterview(group_id):
-        gooboo = WaitGooBoo(GetUserChatID(group_id))
+        chat_id = GetChatID(group_id)
+        gooboo = WaitGooBoo(chat_id)
         if gooboo == 2:
                 api.PostCallAdmin(group_id,chat_id,admin_room_id)
         elif gooboo == 1:
-                api.PostAskIGN(group_id,chat_id)
-                
-def WaitIGN()
-def GetUserChatID(group_id):
-        result = {}
-        thread = api.GetNewMessage(group_id)
-        user_id = thread[0]["user"]["uid"]
-        chat_id = thread[0]["id"]
-        result["user_id"] = user_id
-        result["chat_id"] = chat_id
-        return result
-def WaitGooBoo(id_data):
-        chat_id = id_data["chat_id"]
+                ign_data = ClarifyIGN()
+        clan = GetDesireClan(group_id,chat_id,ign_data)
+        api.PostStartExam(group_id,chat_id,admin_room_id,ign_data,clan)
+def ClarifyIGN(group_id,chat_id):
         while True:
-                i = api.GetFirstReplyGooBoo(group_id,chat_id)
+                api.PostAskIGN(group_id,chat_id)
+                reply_number = 3
+                ign = WaitReply(group_id,chat_id,reply_number)
+                ign_data = api.GetIGNData(application_id,ign,wg_access_token)
+                if data == None:
+                        api.PostIGNError(group_id,chat_id)
+                        reply_number += 2
+                else:
+                        api.PostAskOK(group_id,chat_id,personal_data["battles"],personal_data["nickname"])
+                        i = WaitGooBoo(chat_id)
+                        if i == 1:
+                                ign_data["reply_number"] = reply_number
+                                return ign_data
+                        elif i == 2:
+                                reply_number += 3
+def GetDesireClan(group_id,chat_id,ign_data):
+        api.PostWhichClan(group_id,chat_id)
+        reply_number = ign_data["reply_number"]
+        reply_number += 3
+        reply = WaitReply(group_id,chat_id,reply_number)
+        if reply in ["1","2","3","4","5","6"]:
+                clan_number = result
+                clans = {"1":"WWN","2":"WWN-2","3":"WWN-3","4":"WWN-4","5":"WWN-A","6":"WWN-E"}
+                clan = clans[clan_number]
+                return clan
+        else:
+                api.PostClanNumberError(group_id,chat_id)
+                reply_number += 2
+def WaitReply(group_id,chat_id,reply_number):
+        while True:
+                result = api.GetReply(group_id,chat_id,reply_number)
+                if result != None:
+                        break
+                time.sleep(3)
+        return result
+def WaitGooBoo(chat_id):
+        while True:
+                i = api.GetLastReplyGooBoo(group_id,chat_id)
                 if i == 3:
                         api.PostGooBooError(group_id,chat_id)
                 elif i == 1 or i== 2:
                         return i
                 time.sleep(3)
+def GetUserID(group_id):
+        thread = api.GetNewMessage(group_id)
+        user_id = thread[0]["user"]["uid"]
+        return user_id
+def GetChatID(group_id):
+        thread = api.GetNewMessage(group_id)
+        chat_id = thread[0]["id"]
+        return chat_id
 
 if __name__ == "__main__":
         reload(sys)
@@ -42,7 +79,6 @@ if __name__ == "__main__":
         group_id = "587e17a3ab0b640e62fb444b3c48b83832b622e7"
         admin_room_id = "0fa5904919f14152cbb50d427922b470e68af0ee"
         application_id = "eda85c3d6ddbb56920d3544319a4a788"
-        wg_access_token = "9a72b04b7f60bffc904503e93c241110dd080e4f"
         clans = {"1":"WWN","2":"WWN-2","3":"WWN-3","4":"WWN-4","5":"WWN-A","6":"WWN-E"}
         api = RecruitingBot()
         api.Login("taiseimaruyama7171@gmail.com", "maru0807171")
