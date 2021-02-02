@@ -10,6 +10,7 @@ import base64
 import uuid
 import json
 import requests
+import sys
 
 class NoRedirectHandler(urllib2.HTTPRedirectHandler):
     def http_error_302(self, req, fp, code, msg, headers):
@@ -314,7 +315,11 @@ class LobiAPI:
 			"User-Agent": self.UserAgent,
 			"Host": "api.lobi.co"
 		}
-		return json.loads(urllib2.urlopen(urllib2.Request(url, None, header)).read())
+		try:
+			return json.loads(urllib2.urlopen(urllib2.Request(url, None, header)).read())
+		except urllib2.HTTPError:
+			print "url has been terminated"
+			sys.exit()
 
 	def POST(self, version, request_url, query = {}):
 		url = "https://api.lobi.co/{version}/{request_url}".format(version=version, request_url=request_url)

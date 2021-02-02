@@ -73,21 +73,28 @@ class RecruitingBot(LobiAPI):
                 url = "https://api.wotblitz.asia/wotb/account/list/?application_id={application_id}&search={ign}".format(application_id=application_id,ign=ign)
                 response = requests.get(url)
                 data = response.json()
-                if data["meta"]["count"] == 0:
+                if data["status"] == "error":
                         return None
                 else:
-                        account_id = data["data"][0]["account_id"]
-                        url = "https://api.wotblitz.asia/wotb/account/info/?application_id={application_id}&account_id={account_id}&access_token={wg_access_token}".format(application_id=application_id,account_id=account_id,wg_access_token=wg_access_token)
-                        response = requests.get(url)
-                        data = response.json()
-                        ign_data = {}
-                        ign_data["battles"] = data["data"][str(account_id)]["statistics"]["all"]["battles"]
-                        wins = data["data"][str(account_id)]["statistics"]["all"]["wins"]
-                        decimal.getcontext().prec = 4
-                        ign_data["winrate"] = decimal.Decimal(wins)/decimal.Decimal(ign_data["battles"])*100
-                        ign_data["last_battle_time"] = datetime.datetime.fromtimestamp(data["data"][str(account_id)]["last_battle_time"])
-                        ign_data["nickname"] = data["data"][str(account_id)]["nickname"]
-                        return ign_data
+                        if data["meta"]["count"] == 0:
+                                return None
+                        else:
+                                account_id = data["data"][0]["account_id"]
+                                url = "https://api.wotblitz.asia/wotb/account/info/?application_id={application_id}&account_id={account_id}&access_token={wg_access_token}".format(application_id=application_id,account_id=account_id,wg_access_token=wg_access_token)
+                                response = requests.get(url)
+                                data = response.json()
+                                ign_data = {}
+                                ign_data["battles"] = data["data"][str(account_id)]["statistics"]["all"]["battles"]
+                                if ign_data["battles"] == 0:
+                                        return None
+                                wins = data["data"][str(account_id)]["statistics"]["all"]["wins"]
+                                decimal.getcontext().prec = 4
+                                ign_data["winrate"] = decimal.Decimal(wins)/decimal.Decimal(ign_data["battles"])*100
+                                ign_data["last_battle_time"] = datetime.datetime.fromtimestamp(data["data"][str(account_id)]["last_battle_time"])
+                                ign_data["nickname"] = data["data"][str(account_id)]["nickname"]
+                                print(ign_data)
+                                return ign_data
+
         def PostIGNError(self,group_id,chat_id):
                 message = "[BOTより返信]\nIGNにマッチしたデータが見つかりませんでした\n再度IGN入力してください"
                 response = self.PostReply(group_id,chat_id,message)
@@ -107,9 +114,11 @@ class RecruitingBot(LobiAPI):
         def PostStartExam(self,group_id,chat_id,admin_room_id,ign_data,clan):
                 message = "[BOTより返信]\n担当者が審査を開始します\n（この作業には最大数日かかる可能性があります）\n審査ののち担当者がロビーで個チャをいたします\nしばらくお待ちください"
                 response = self.PostReply(group_id,chat_id,message)
-                message = "[BOTより送信]\n広報室より入隊希望の" + ign_data["nickname"] + "さん\n基本情報は以下の通りです\n\nIGN：" + ign_data["nickname"] + "\n戦闘数：" + str(ign_data["battles"]) + "\n勝率：" + str(ign_data["winrate"]) + "\n最終戦闘日：" + str(ign_data["last_battle_time"]) + "\n\n戦闘名声、ツイッターの確認お願いします\nグー4で規約確認へ\n以後の作業は司令官に引き継ぎます"
+                lobi_url = "https://web.lobi.co/game/world_of_tanks_blitz/group/" + str(group_id) + "/chat/" + str(chat_id)
+                blitz_star_url = "https://www.blitzstars.com/player/asia/" + ign_data["nickname"]
+                message = "[BOTより送信]\n広報室より入隊希望の" + ign_data["nickname"] + "さん\n" + lobi_url + "\n基本情報は以下の通りです\n\nIGN：" + ign_data["nickname"] + "\n戦闘数：" + str(ign_data["battles"]) + "\n勝率：" + str(ign_data["winrate"]) + "\n最終戦闘日：" + str(ign_data["last_battle_time"]) + "\n所属希望：" + clan + "\n" + blitz_star_url + "\n\n戦闘名声、ツイッターの確認お願いします\n以後の作業は司令官に引き継ぎます"
                 response = self.PostMessage(admin_room_id,message)
-                return response
+                return response["id"]
 
 if __name__ == "__main__":
         api = RecruitingBot()

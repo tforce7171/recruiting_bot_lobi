@@ -12,43 +12,48 @@ from recruitingbot import RecruitingBot
 
 def LookieInterview(group_id):
         chat_id = GetChatID(group_id)
+        api.PostFirstReply(group_id,chat_id)
         gooboo = WaitGooBoo(chat_id)
         if gooboo == 2:
                 api.PostCallAdmin(group_id,chat_id,admin_room_id)
         elif gooboo == 1:
-                ign_data = ClarifyIGN()
+                ign_data = ClarifyIGN(group_id,chat_id)
         clan = GetDesireClan(group_id,chat_id,ign_data)
-        api.PostStartExam(group_id,chat_id,admin_room_id,ign_data,clan)
+        exam_id = api.PostStartExam(group_id,chat_id,admin_room_id,ign_data,clan)
+        return exam_chat_id
+# def AdminExam():
 def ClarifyIGN(group_id,chat_id):
+        api.PostAskIGN(group_id,chat_id)
+        reply_number = 3
         while True:
-                api.PostAskIGN(group_id,chat_id)
-                reply_number = 3
                 ign = WaitReply(group_id,chat_id,reply_number)
-                ign_data = api.GetIGNData(application_id,ign,wg_access_token)
-                if data == None:
+                ign_data = api.GetIGNData(application_id,ign)
+                if ign_data == None:
                         api.PostIGNError(group_id,chat_id)
                         reply_number += 2
                 else:
-                        api.PostAskOK(group_id,chat_id,personal_data["battles"],personal_data["nickname"])
+                        api.PostAskOK(group_id,chat_id,ign_data["battles"],ign_data["nickname"])
                         i = WaitGooBoo(chat_id)
                         if i == 1:
                                 ign_data["reply_number"] = reply_number
                                 return ign_data
                         elif i == 2:
                                 reply_number += 3
+                                api.PostAskIGN(group_id,chat_id)
 def GetDesireClan(group_id,chat_id,ign_data):
         api.PostWhichClan(group_id,chat_id)
         reply_number = ign_data["reply_number"]
         reply_number += 3
-        reply = WaitReply(group_id,chat_id,reply_number)
-        if reply in ["1","2","3","4","5","6"]:
-                clan_number = result
-                clans = {"1":"WWN","2":"WWN-2","3":"WWN-3","4":"WWN-4","5":"WWN-A","6":"WWN-E"}
-                clan = clans[clan_number]
-                return clan
-        else:
-                api.PostClanNumberError(group_id,chat_id)
-                reply_number += 2
+        while True:
+                reply = WaitReply(group_id,chat_id,reply_number)
+                if reply in ["1","2","3","4","5","6"]:
+                        clan_number = reply
+                        clans = {"1":"WWN","2":"WWN-2","3":"WWN-3","4":"WWN-4","5":"WWN-A","6":"WWN-E"}
+                        clan = clans[clan_number]
+                        return clan
+                else:
+                        api.PostClanNumberError(group_id,chat_id)
+                        reply_number += 2
 def WaitReply(group_id,chat_id,reply_number):
         while True:
                 result = api.GetReply(group_id,chat_id,reply_number)
@@ -76,12 +81,16 @@ def GetChatID(group_id):
 if __name__ == "__main__":
         reload(sys)
         sys.setdefaultencoding("utf-8")
-        group_id = "587e17a3ab0b640e62fb444b3c48b83832b622e7"
-        admin_room_id = "0fa5904919f14152cbb50d427922b470e68af0ee"
+        # group_id = "587e17a3ab0b640e62fb444b3c48b83832b622e7"
+        group_id = "52edc23e5931fffb8686379496d55f6950fdf152"#test
+        # admin_room_id = "0fa5904919f14152cbb50d427922b470e68af0ee"
+        admin_room_id = "44e42c989a9073148caf0da6b9bef1bbcc580a6d"#test
         application_id = "eda85c3d6ddbb56920d3544319a4a788"
         clans = {"1":"WWN","2":"WWN-2","3":"WWN-3","4":"WWN-4","5":"WWN-A","6":"WWN-E"}
         api = RecruitingBot()
         api.Login("taiseimaruyama7171@gmail.com", "maru0807171")
+        print("constant set")
+        exam_chat_id = LookieInterview(group_id)
 
 
 
