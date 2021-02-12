@@ -19,7 +19,7 @@ def LookieInterview(group_id):
         elif gooboo == 1:
                 ign_data = ClarifyIGN(group_id,chat_id)
         clan = GetDesireClan(group_id,chat_id,ign_data)
-        exam_id = api.PostStartExam(group_id,chat_id,admin_room_id,ign_data,clan)
+        exam_chat_id = api.PostStartExam(group_id,chat_id,admin_room_id,ign_data,clan)
         return exam_chat_id
 # def AdminExam():
 def ClarifyIGN(group_id,chat_id):

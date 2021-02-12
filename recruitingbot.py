@@ -14,17 +14,22 @@ class RecruitingBot(LobiAPI):
 #        def __init__(self):
 #                self.Login("taiseimaruyama7171@gmail.com", "maru0807171")
         def GetWGAccessToken(self):
-                print "connecting to db"
-                with self.GetConnection() as conn:
-                        print "db connected"
-                        with conn.cursor() as cur:
-                                cur.execute("select * from access_token where id=1")
-                                rows = cur.fetchall()
-                                access_token = rows[0][1]
-                                return access_token
-        def GetConnection(self):
-                database_url = "postgres://drfhnttmqcvgxm:c992e8ac46972fc6d124e641bbab98d0772dd3ff1f7fdc047421be52113e48c9@ec2-34-204-121-199.compute-1.amazonaws.com:5432/d80sc5jlbk4p7h"
-                return psycopg2.connect(database_url)
+                json_file = json.load(open('wg_access_token.json', 'r'))
+                wg_access_token = json_file["wg_access_token"]
+                return wg_access_token
+        def UpdateAccessToken(self,application_id):
+                dict_data = json.load(open('wg_access_token.json', 'r'))
+                url = "https://api.worldoftanks.asia/wot/auth/prolongate/"
+                body = {
+                        "application_id": application_id,
+                        "access_token": dict_data["wg_access_token"]
+                }
+                response = requests.post(url,data=body)
+                data = response.json()
+                dict_data["wg_access_token"] = data["data"]["access_token"]
+                print(dict_data)
+                with open('wg_access_token.json', mode='wt') as file:
+                        json.dump(dict_data, file, ensure_ascii=False, indent=2)
         def GetNewMessage(self,group_id):
                 top_thread = self.GetThreads(group_id,1)
                 if top_thread[0].get('replies')==None:
@@ -124,5 +129,4 @@ if __name__ == "__main__":
         api = RecruitingBot()
         api.Login("taiseimaruyama7171@gmail.com", "maru0807171")
         application_id = "eda85c3d6ddbb56920d3544319a4a788"
-        ign_data = api.GetIGNData(application_id,"TAI_seisen_shokuhin_7171")
-        print ign_data["last_battle_time"]
+        api.UpdateAccessToken(application_id)
