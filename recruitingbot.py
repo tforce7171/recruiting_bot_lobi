@@ -7,14 +7,13 @@ import requests
 import decimal
 import sys
 import schedule
-import psycopg2
 from photon import LobiAPI
 
 class RecruitingBot(LobiAPI):
 #        def __init__(self):
 #                self.Login("taiseimaruyama7171@gmail.com", "maru0807171")
         def GetWGAccessToken(self):
-                json_file = json.load(open('wg_access_token.json', 'r'))
+                json_file = json.load(open('..//token_refresher//wg_access_token.json', 'r'))
                 wg_access_token = json_file["wg_access_token"]
                 return wg_access_token
         def UpdateAccessToken(self,application_id):
@@ -88,6 +87,7 @@ class RecruitingBot(LobiAPI):
                                 url = "https://api.wotblitz.asia/wotb/account/info/?application_id={application_id}&account_id={account_id}&access_token={wg_access_token}".format(application_id=application_id,account_id=account_id,wg_access_token=wg_access_token)
                                 response = requests.get(url)
                                 data = response.json()
+                                print(data)
                                 ign_data = {}
                                 ign_data["battles"] = data["data"][str(account_id)]["statistics"]["all"]["battles"]
                                 if ign_data["battles"] == 0:

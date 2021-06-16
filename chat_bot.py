@@ -16,11 +16,12 @@ def LookieInterview(group_id):
         gooboo = WaitGooBoo(chat_id)
         if gooboo == 2:
                 api.PostCallAdmin(group_id,chat_id,admin_room_id)
+                return
         elif gooboo == 1:
                 ign_data = ClarifyIGN(group_id,chat_id)
-        clan = GetDesireClan(group_id,chat_id,ign_data)
-        exam_chat_id = api.PostStartExam(group_id,chat_id,admin_room_id,ign_data,clan)
-        return exam_chat_id
+                clan = GetDesireClan(group_id,chat_id,ign_data)
+                exam_chat_id = api.PostStartExam(group_id,chat_id,admin_room_id,ign_data,clan)
+                return exam_chat_id
 # def AdminExam():
 def ClarifyIGN(group_id,chat_id):
         api.PostAskIGN(group_id,chat_id)
@@ -81,10 +82,10 @@ def GetChatID(group_id):
 if __name__ == "__main__":
         reload(sys)
         sys.setdefaultencoding("utf-8")
-        # group_id = "587e17a3ab0b640e62fb444b3c48b83832b622e7"
-        group_id = "52edc23e5931fffb8686379496d55f6950fdf152"#test
-        # admin_room_id = "0fa5904919f14152cbb50d427922b470e68af0ee"
-        admin_room_id = "44e42c989a9073148caf0da6b9bef1bbcc580a6d"#test
+        group_id = "587e17a3ab0b640e62fb444b3c48b83832b622e7"#production env
+        admin_room_id = "0fa5904919f14152cbb50d427922b470e68af0ee"#production env
+        # group_id = "587e17a3ab0b640e62fb444b3c48b83832b622e7"#test env
+        # admin_room_id = "44e42c989a9073148caf0da6b9bef1bbcc580a6d"#test env
         application_id = "eda85c3d6ddbb56920d3544319a4a788"
         clans = {"1":"WWN","2":"WWN-2","3":"WWN-3","4":"WWN-4","5":"WWN-A","6":"WWN-E"}
         api = RecruitingBot()
