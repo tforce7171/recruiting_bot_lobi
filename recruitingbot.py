@@ -8,6 +8,7 @@ import decimal
 import sys
 import schedule
 import psycopg2
+import os
 from photon import LobiAPI
 
 class RecruitingBot(LobiAPI):
