@@ -7,14 +7,18 @@ import requests
 import decimal
 import sys
 import schedule
+import psycopg2
 from photon import LobiAPI
 
 class RecruitingBot(LobiAPI):
 #        def __init__(self):
 #                self.Login("taiseimaruyama7171@gmail.com", "maru0807171")
         def GetWGAccessToken(self):
-                json_file = json.load(open('..//token_refresher//wg_access_token.json', 'r'))
-                wg_access_token = json_file["wg_access_token"]
+                DATABASE_URL = os.environ['DATABASE_URL']
+                conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+                cur = conn.cursor()
+                cur.execute('SELECT * FROM wg_access_token')
+                wg_access_token = dict(cur.fetchall())[1]
                 return wg_access_token
         def UpdateAccessToken(self,application_id):
                 dict_data = json.load(open('wg_access_token.json', 'r'))
