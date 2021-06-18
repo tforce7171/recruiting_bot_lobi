@@ -82,8 +82,8 @@ def GetChatID(group_id):
 if __name__ == "__main__":
         reload(sys)
         sys.setdefaultencoding("utf-8")
-        group_id = "587e17a3ab0b640e62fb444b3c48b83832b622e7"#production env
-        admin_room_id = "0fa5904919f14152cbb50d427922b470e68af0ee"#production env
+        group_id = "f2ffbb85d8d3cda3e40b9d39cc83e9f93acbec57"#production env
+        admin_room_id = "8a0ab166d58520a0981a502e4135a716b7ffb20b"#production env
         # group_id = "587e17a3ab0b640e62fb444b3c48b83832b622e7"#test env
         # admin_room_id = "44e42c989a9073148caf0da6b9bef1bbcc580a6d"#test env
         application_id = "eda85c3d6ddbb56920d3544319a4a788"
