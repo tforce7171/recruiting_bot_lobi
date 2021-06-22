@@ -14,8 +14,8 @@ def BeforeExam():
         if thread != 0:
                 chat_id = thread[0]["id"]
                 user_id = thread[0]["user"]["uid"]
-                print(chat_id)
                 if not user_id in commander_ids:
+                        print(chat_id)
                         subprocess.Popen(["python","./chat_bot.py","&"])
                         print "starting chat"
 if __name__ == "__main__":
