@@ -47,9 +47,9 @@ def GetDesireClan(group_id,chat_id,ign_data):
         reply_number += 3
         while True:
                 reply = WaitReply(group_id,chat_id,reply_number)
-                if reply in ["1","2","3","4","5","6"]:
+                if reply in ["1","2","3","4","5"]:
                         clan_number = reply
-                        clans = {"1":"WWN","2":"WWN-2","3":"WWN-3","4":"WWN-4","5":"WWN-A","6":"WWN-E"}
+                        clans = {"1":"WWN","2":"WWN-2","3":"WWN-3","4":"WWN-4","5":"WWN-E"}
                         clan = clans[clan_number]
                         return clan
                 else:
