@@ -112,7 +112,7 @@ class RecruitingBot(LobiAPI):
                 response = self.PostReply(group_id,chat_id,message)
                 return response
         def PostWhichClan(self,group_id,chat_id):
-                message = "[BOTより返信]\n所属したいクランの希望を聞きます\n以下の表に従って数字（半角）を返信してください\nWWN：1\nWWN-2：2\nWWN-3：3\nWWN-4：4\nWWN-A：5\nWWN-E：6\n\n"
+                message = "[BOTより返信]\n所属したいクランの希望を聞きます\n以下の表に従って数字（半角）を返信してください\nWWN：1\nWWN-2：2\nWWN-3：3\nWWN-4：4\nWWN-E：5\nどれでも：6\n\n"
                 response = self.PostReply(group_id,chat_id,message)
                 return response
         def PostClanNumberError(self,group_id,chat_id):
